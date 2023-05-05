@@ -187,3 +187,4 @@ while True:
     
     else:
         print('Opción inválida')
+        sys.exit()
