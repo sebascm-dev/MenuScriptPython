@@ -39,6 +39,7 @@ ping 127.0.0.1 -n 6 > nul
 python --version > nul 2>&1 || echo ^[+^] INICIANDO DESCARGA DE PYTHON && echo. && curl -o python-3.11.3-amd64.exe https://www.python.org/ftp/python/3.11.3/python-3.11.3-amd64.exe && start /wait python-3.11.3-amd64.exe && echo ^[+^] INSTALACION DE PYTHON COMPLETADA && exit 1
 
 echo ^[+^] INSTALANDO DEPENDENCIAS DEL SCRIPT A DESCARGAR
+ping 127.0.0.1 -n 3 > nul
 REM Instalar dependencias
 echo ^[+^] ACTUALIZANDO PIP
 python.exe -m pip install --upgrade pip > nul 2>&1
