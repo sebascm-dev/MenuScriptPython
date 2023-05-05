@@ -19,6 +19,18 @@ if '%errorlevel%' NEQ '0' (
     pushd "%CD%"
     CD /D "%~dp0"
 :--------------------------------------
+
+color E0
+
+echo.
+echo  .----..----..----. .-. .-.  .--.   .---. .-. .-.
+echo { {__  | {_  | {}  }| {_} | / {} \ /  ___}| |/ / 
+echo .-._} }| {__ | {}  }| { } |/  /\  \\     }| |\ \ 
+echo `----' `----'`----' `-' `-'`-'  `-' `---' `-' `-'
+ping 127.0.0.1 -n 6 > nul
+
+cls
+
 echo.
 echo ^[+^] COMPROBANDO SI PYTHON ESTA INSTALADO
 echo.
