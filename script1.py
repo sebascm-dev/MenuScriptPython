@@ -6,13 +6,15 @@ import subprocess
 import winreg
 import requests
 import zipfile
-
 import pyautogui as pt
 import numpy as np
 import keyboard
 import time
 import random
-
+from pytube import Playlist
+from tqdm import tqdm
+import moviepy.editor as mp
+import logging
 from colorama import init, Fore, Style
 
 # Función para elevar los privilegios del script a nivel de administrador
@@ -51,6 +53,7 @@ while True:
     print()
     print(Fore.GREEN + '1. Activaciones Windows' + Style.RESET_ALL)
     print(Fore.GREEN + '2. Descargar Office-2021' + Style.RESET_ALL)
+    print(Fore.GREEN + '97. Descargas Multimedia' + Style.RESET_ALL)
     print(Fore.GREEN + '98. Sorteos Instagram Automatizado' + Style.RESET_ALL)
     print(Fore.RED + '99. Salir' + Style.RESET_ALL)
     print()
@@ -129,7 +132,6 @@ while True:
             else:
                 print('Opción inválida')
 
-
     elif opcion == '2':
         
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -187,6 +189,244 @@ while True:
         time.sleep(3)
 
         os.system('cls' if os.name == 'nt' else 'clear')
+
+    elif opcion == '97':
+
+        while True:
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print(Fore.YELLOW + '╔══════════════════════╗' + Style.RESET_ALL)
+            print(Fore.YELLOW + '║ DESCARGAS MULTIMEDIA ║' + Style.RESET_ALL)
+            print(Fore.YELLOW + '╚══════════════════════╝' + Style.RESET_ALL)
+            print()
+            print(Fore.GREEN + '1. DESARROLLANDO' + Style.RESET_ALL)
+            print(Fore.GREEN + '2. DESARROLLANDO' + Style.RESET_ALL)
+            print(Fore.GREEN + '3. DESCARGAR PLAYLSIT MP4 YOUTUBE' + Style.RESET_ALL)
+            print(Fore.GREEN + '4. DESCARGAR PLAYLIST MP3 YOUTUBE' + Style.RESET_ALL)
+            print(Fore.RED + '99. Volver' + Style.RESET_ALL)
+            print()
+
+            opcionEntretenimiento = input('Seleccione una opcion: ')
+
+            if opcionEntretenimiento == '1':
+                print()
+                print(Fore.YELLOW + 'DESARROLLANDO...' + Style.RESET_ALL)
+                time.sleep(3)
+                os.system('cls' if os.name == 'nt' else 'clear')
+
+            elif opcionEntretenimiento == '2':
+                print()
+                print(Fore.YELLOW + 'DESARROLLANDO...' + Style.RESET_ALL)
+                time.sleep(3)
+                os.system('cls' if os.name == 'nt' else 'clear')
+            
+            elif opcionEntretenimiento == '3':
+                
+                # Disable moviepy logs
+                logger = logging.getLogger('moviepy')
+                logger.setLevel(logging.ERROR)
+                logging.disable(logging.WARNING)
+                logging.disable(logging.CRITICAL)
+                logging.disable(logging.INFO)
+
+                def sanitize_filename(filename):
+                    """
+                    Elimina caracteres no permitidos en nombres de archivo de Windows.
+                    """
+                    forbidden_chars = r'<>:"/\|?*'
+                    for char in forbidden_chars:
+                        filename = filename.replace(char, '')
+                    return filename
+
+                def download_playlist_videos():
+                    os.system('cls' if os.name == 'nt' else 'clear')
+
+                    print(Fore.YELLOW + '╔════════════════════════════════╗' + Style.RESET_ALL)
+                    print(Fore.YELLOW + '║ DESCARGAR PLAYLIST MP4 YOUTUBE ║' + Style.RESET_ALL)
+                    print(Fore.YELLOW + '╚════════════════════════════════╝' + Style.RESET_ALL)
+                    print()
+
+                    playlist_url = input("Ingrese la URL de la Playlist: ")
+
+                    pl = Playlist(playlist_url)
+                    
+                    # Obtener el título de la lista de reproducción
+                    playlist_title = sanitize_filename(pl.title)
+                    
+                    # Crear la carpeta principal con el nombre "Playlist" si no existe
+                    main_folder = "Playlist"
+                    if not os.path.exists(main_folder):
+                        os.makedirs(main_folder)
+                    
+                    # Crear la carpeta con el título de la lista de reproducción dentro de la carpeta principal
+                    folder_name = sanitize_filename(playlist_title.replace('/', '_'))
+                    folder_path = f"{main_folder}/{folder_name}"
+                    if not os.path.exists(folder_path):
+                        os.makedirs(folder_path)
+                    
+                    total_videos = len(pl.video_urls)
+                    
+                    for index, video in enumerate(pl.videos, start=1):
+                        os.system('cls' if os.name == 'nt' else 'clear')
+                        print(Fore.YELLOW + '╔════════════════════════════════╗' + Style.RESET_ALL)
+                        print(Fore.YELLOW + '║ DESCARGAR PLAYLIST MP4 YOUTUBE ║' + Style.RESET_ALL)
+                        print(Fore.YELLOW + '╚════════════════════════════════╝' + Style.RESET_ALL)
+                        print()
+                        print(Fore.YELLOW + f'[ PLAYLIST {playlist_title} ]' + Style.RESET_ALL)
+                        print()
+
+                        print(Fore.YELLOW + '[/]' + Style.RESET_ALL + f" DESCARGANDO {index} DE {total_videos}: {video.title}")
+                        stream = video.streams.get_highest_resolution()
+                        file_size = int(requests.head(stream.url).headers.get("Content-Length"))
+                        
+                        # Descargar el video con una barra de progreso
+                        response = requests.get(stream.url, stream=True)
+                        video_file_path = f"{folder_path}/{sanitize_filename(video.title)}.mp4"
+                        mp3_file_path = f"{folder_path}/{sanitize_filename(video.title)}.mp3"
+                        
+                        with open(video_file_path, "wb") as f:
+                            with tqdm(total=file_size, unit='bytes', unit_scale=True) as pbar:
+                                for chunk in response.iter_content(chunk_size=1024):
+                                    if chunk:
+                                        f.write(chunk)
+                                        pbar.update(len(chunk))
+
+                        
+                    os.system('cls' if os.name == 'nt' else 'clear')
+                    print(Fore.YELLOW + '╔═══════════════════════════════╗' + Style.RESET_ALL)
+                    print(Fore.YELLOW + '║ DESCARGAR PLAYLIST DE YOUTUBE ║' + Style.RESET_ALL)
+                    print(Fore.YELLOW + '╚═══════════════════════════════╝' + Style.RESET_ALL)
+                    print()
+                    print(Fore.GREEN + f'[ PLAYLIST {playlist_title} DESCARGADA CORRECTAMENTE ]' + Style.RESET_ALL)
+                    print()
+
+                    for index, video in enumerate(pl.videos, start=1):
+                        print(Fore.GREEN + '[+]' + Style.RESET_ALL + f" {video.title}")
+                    
+                    print()
+                    print(Fore.GREEN + "[!]" + Style.RESET_ALL + " PRESIONA ENTER PARA VOLVER AL MENU")
+                    input()
+
+                try:
+                    download_playlist_videos()
+                except Exception as e:
+                    print(f"Ocurrió un error durante la descarga: {str(e)}")
+
+            
+            elif opcionEntretenimiento == '4':
+
+                # Disable moviepy logs
+                logger = logging.getLogger('moviepy')
+                logger.setLevel(logging.ERROR)
+                logging.disable(logging.WARNING)
+                logging.disable(logging.CRITICAL)
+                logging.disable(logging.INFO)
+
+                def sanitize_filename(filename):
+                    """
+                    Elimina caracteres no permitidos en nombres de archivo de Windows.
+                    """
+                    forbidden_chars = r'<>:"/\|?*'
+                    for char in forbidden_chars:
+                        filename = filename.replace(char, '')
+                    return filename
+
+                def download_playlist_videos():
+                    os.system('cls' if os.name == 'nt' else 'clear')
+
+                    print(Fore.YELLOW + '╔════════════════════════════════╗' + Style.RESET_ALL)
+                    print(Fore.YELLOW + '║ DESCARGAR PLAYLIST MP3 YOUTUBE ║' + Style.RESET_ALL)
+                    print(Fore.YELLOW + '╚════════════════════════════════╝' + Style.RESET_ALL)
+                    print()
+
+                    playlist_url = input("Ingrese la URL de la Playlist: ")
+
+                    pl = Playlist(playlist_url)
+                    
+                    # Obtener el título de la lista de reproducción
+                    playlist_title = sanitize_filename(pl.title)
+                    
+                    # Crear la carpeta principal con el nombre "Playlist" si no existe
+                    main_folder = "Playlist"
+                    if not os.path.exists(main_folder):
+                        os.makedirs(main_folder)
+                    
+                    # Crear la carpeta con el título de la lista de reproducción dentro de la carpeta principal
+                    folder_name = sanitize_filename(playlist_title.replace('/', '_'))
+                    folder_path = f"{main_folder}/{folder_name}"
+                    if not os.path.exists(folder_path):
+                        os.makedirs(folder_path)
+                    
+                    total_videos = len(pl.video_urls)
+                    
+                    for index, video in enumerate(pl.videos, start=1):
+                        os.system('cls' if os.name == 'nt' else 'clear')
+                        print(Fore.YELLOW + '╔════════════════════════════════╗' + Style.RESET_ALL)
+                        print(Fore.YELLOW + '║ DESCARGAR PLAYLIST MP3 YOUTUBE ║' + Style.RESET_ALL)
+                        print(Fore.YELLOW + '╚════════════════════════════════╝' + Style.RESET_ALL)
+                        print()
+                        print(Fore.YELLOW + f'[ PLAYLIST {playlist_title} ]' + Style.RESET_ALL)
+                        print()
+
+                        print(Fore.YELLOW + '[/]' + Style.RESET_ALL + f" DESCARGANDO {index} DE {total_videos}: {video.title}")
+                        stream = video.streams.get_highest_resolution()
+                        file_size = int(requests.head(stream.url).headers.get("Content-Length"))
+                        
+                        # Descargar el video con una barra de progreso
+                        response = requests.get(stream.url, stream=True)
+                        video_file_path = f"{folder_path}/{sanitize_filename(video.title)}.mp4"
+                        mp3_file_path = f"{folder_path}/{sanitize_filename(video.title)}.mp3"
+                        
+                        with open(video_file_path, "wb") as f:
+                            with tqdm(total=file_size, unit='bytes', unit_scale=True) as pbar:
+                                for chunk in response.iter_content(chunk_size=1024):
+                                    if chunk:
+                                        f.write(chunk)
+                                        pbar.update(len(chunk))
+                        
+                        # Convertir el video a MP3
+                        try:
+                            orig_stdout = sys.stdout
+                            sys.stdout = open(os.devnull, 'w')  # Suprimir la salida
+                            video_clip = mp.VideoFileClip(video_file_path)
+                            audio_clip = video_clip.audio
+                            audio_clip.write_audiofile(mp3_file_path, verbose=False)
+                        finally:
+                            sys.stdout.close()
+                            sys.stdout = orig_stdout
+
+                        # Cerrar los clips de video y audio
+                        video_clip.close()
+                        audio_clip.close()
+
+                        # Eliminar el archivo MP4
+                        os.remove(video_file_path)
+                        
+                    os.system('cls' if os.name == 'nt' else 'clear')
+                    print(Fore.YELLOW + '╔═══════════════════════════════╗' + Style.RESET_ALL)
+                    print(Fore.YELLOW + '║ DESCARGAR PLAYLIST DE YOUTUBE ║' + Style.RESET_ALL)
+                    print(Fore.YELLOW + '╚═══════════════════════════════╝' + Style.RESET_ALL)
+                    print()
+                    print(Fore.GREEN + f'[ PLAYLIST {playlist_title} DESCARGADA CORRECTAMENTE ]' + Style.RESET_ALL)
+                    print()
+
+                    for index, video in enumerate(pl.videos, start=1):
+                        print(Fore.GREEN + '[+]' + Style.RESET_ALL + f" {video.title}")
+                    
+                    print()
+                    print(Fore.GREEN + "[!]" + Style.RESET_ALL + " PRESIONA ENTER PARA VOLVER AL MENU")
+                    input()
+
+                try:
+                    download_playlist_videos()
+                except Exception as e:
+                    print(f"Ocurrió un error durante la descarga: {str(e)}")
+
+            elif opcionEntretenimiento == '99':
+                os.system('cls' if os.name == 'nt' else 'clear')
+                break
+
+            else:
+                print('Opción inválida')
 
     elif opcion == '98':
         
