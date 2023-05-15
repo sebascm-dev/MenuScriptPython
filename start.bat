@@ -90,6 +90,30 @@ echo.
 pip install numpy
 cls
 
+echo.
+echo ^[+^] INSTALANDO PYTUBE
+echo.
+pip install pytube
+cls
+
+echo.
+echo ^[+^] INSTALANDO TQDM
+echo.
+pip install tqdm
+cls
+
+echo.
+echo ^[+^] INSTALANDO MOVIEPY
+echo.
+pip install moviepy
+cls
+
+echo.
+echo ^[+^] INSTALANDO LOGGING
+echo.
+pip install logging
+cls
+
 ping 127.0.0.1 -n 3 > nul
 
 echo.
