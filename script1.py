@@ -1,6 +1,7 @@
 import ctypes
 import sys
 import os
+import threading
 import time
 import subprocess
 import winreg
@@ -11,6 +12,7 @@ import numpy as np
 import keyboard
 import time
 import random
+import pyautogui as pt
 from pytube import Playlist
 from tqdm import tqdm
 import moviepy.editor as mp
@@ -54,7 +56,7 @@ while True:
     print(Fore.GREEN + '1. Preparar Ordenador Sebastián' + Style.RESET_ALL)
     print(Fore.GREEN + '2. Activaciones Windows' + Style.RESET_ALL)
     print(Fore.GREEN + '3. Descargar Office-2021' + Style.RESET_ALL)
-    print(Fore.GREEN + '97. Descargas Multimedia' + Style.RESET_ALL)
+    print(Fore.GREEN + '4. Localizar Archivo' + Style.RESET_ALL)
     print(Fore.GREEN + '98. Sorteos Instagram Automatizado' + Style.RESET_ALL)
     print(Fore.RED + '99. Salir' + Style.RESET_ALL)
     print()
@@ -262,243 +264,190 @@ while True:
 
         os.system('cls' if os.name == 'nt' else 'clear')
 
-    elif opcion == '97':
+    elif opcion == '4':
+        def buscar_archivos_office(ruta, archivo_a_buscar):
+            archivos_office = []
+            extensiones = ['.xlsx', '.xls', '.docx', '.pptx', '.pdf']
+            archivos_no_deseados = [
+                r'/Users\spano\.vscode\extensions\miguelsolorio.symbols-0.0.15\file-types\Word.docx',
+                r'/Program Files\WindowsApps\AppUp.IntelGraphicsExperience_1.100.5185.0_x64__8j3eq9eme6ctt\Assets\FFMPEG_Notice.pdf',
+                r'/Program Files\WindowsApps\AppUp.IntelGraphicsExperience_1.100.5185.0_x64__8j3eq9eme6ctt\Assets\Notice.pdf',
+                r'/Program Files\WindowsApps\AppUp.IntelGraphicsExperience_1.100.5185.0_x64__8j3eq9eme6ctt\Assets\IGCC_Legal_License.PDF',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\1494870C-9912-C184-4CC9-B401-A53F4D8DE290.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\DocTemplates\ENU\template1.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\DocTemplates\ENU\template2.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\DocTemplates\ENU\template3.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\DocTemplates\ESP\template1.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\DocTemplates\ESP\template2.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\DocTemplates\ESP\template3.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\HostedServicesTemplates\ENU\template1.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\IDTemplates\ENU\AdobeID.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\IDTemplates\ENU\DefaultID.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\IDTemplates\ESP\AdobeID.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\IDTemplates\ESP\DefaultID.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\PDFSigQFormalRep.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\WebResources\Resource0\static\js\plugins\on-boarding\images\A12_CrossLarge_24_N.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\WebResources\Resource0\static\js\plugins\sample-files\assets\Sample Files\Adobe Acrobat Pro DC.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\WebResources\Resource0\static\js\plugins\sample-files\assets\Sample Files\Adobe Cloud Services.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\WebResources\Resource0\static\js\plugins\sample-files\assets\Sample Files\Adobe Sign White Paper.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\WebResources\Resource0\static\js\plugins\sample-files\assets\Sample Files\Bus Schedule.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\WebResources\Resource0\static\js\plugins\sample-files\assets\Sample Files\Complex Machine.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\plug_ins\Annotations\Stamps\CompareMarkers.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\plug_ins\Annotations\Stamps\ENU\Dynamic.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\plug_ins\Annotations\Stamps\ENU\Faces.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\plug_ins\Annotations\Stamps\ENU\Pointers.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\plug_ins\Annotations\Stamps\ENU\SignHere.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\plug_ins\Annotations\Stamps\ENU\Standard.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\plug_ins\Annotations\Stamps\ENU\StandardBusiness.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\plug_ins\Annotations\Stamps\ESP\Dynamic.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\plug_ins\Annotations\Stamps\ESP\Faces.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\plug_ins\Annotations\Stamps\ESP\Pointers.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\plug_ins\Annotations\Stamps\ESP\SignHere.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\plug_ins\Annotations\Stamps\ESP\Standard.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\plug_ins\Annotations\Stamps\ESP\StandardBusiness.pdf',
+                r'/Program Files\Adobe\Acrobat DC\Acrobat\plug_ins\Annotations\Stamps\Words.pdf',
+                r'/Program Files\Oracle\VirtualBox\doc\UserManual.pdf',
+                r'/Users\spano\.vscode\extensions\miguelsolorio.symbols-0.0.15\file-types\PDF.pdf',
+                r'/Users\spano\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\mpl-data\images\back.pdf',
+                r'/Users\spano\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\mpl-data\images\filesave.pdf',
+                r'/Users\spano\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\mpl-data\images\forward.pdf',
+                r'/Users\spano\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\mpl-data\images\hand.pdf',
+                r'/Users\spano\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\mpl-data\images\help.pdf',
+                r'/Users\spano\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\mpl-data\images\home.pdf',
+                r'/Users\spano\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\mpl-data\images\matplotlib.pdf',
+                r'/Users\spano\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\mpl-data\images\move.pdf',
+                r'/Users\spano\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\mpl-data\images\qt4_editor_options.pdf',
+                r'/Users\spano\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\mpl-data\images\subplots.pdf',
+                r'/Users\spano\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\mpl-data\images\zoom_to_rect.pdf',
+                r'/Users\spano\iCloudDrive\Downloads\Boletín Backup.pdf',
+                r'/xampp\MercuryMail\man-461.pdf',
+                r'/xampp\MercuryMail\manual.pdf',
+                r'/xampp\htdocs\dashboard\docs\access-phpmyadmin-remotely.pdf',
+                r'/xampp\htdocs\dashboard\docs\activate-use-xdebug.pdf',
+                r'/xampp\htdocs\dashboard\docs\auto-start-xampp.pdf',
+                r'/xampp\htdocs\dashboard\docs\backup-restore-mysql.pdf',
+                r'/xampp\htdocs\dashboard\docs\change-mysql-temp-dir.pdf',
+                r'/xampp\htdocs\dashboard\docs\configure-use-tomcat.pdf',
+                r'/xampp\htdocs\dashboard\docs\configure-vhosts.pdf',
+                r'/xampp\htdocs\dashboard\docs\configure-wildcard-subdomains.pdf',
+                r'/xampp\htdocs\dashboard\docs\create-framework-project-zf1.pdf',
+                r'/xampp\htdocs\dashboard\docs\create-framework-project-zf2.pdf',
+                r'/xampp\htdocs\dashboard\docs\deploy-git-app.pdf',
+                r'/xampp\htdocs\dashboard\docs\increase-php-file-upload-limit.pdf',
+                r'/xampp\htdocs\dashboard\docs\reset-mysql-password.pdf',
+                r'/xampp\htdocs\dashboard\docs\send-mail.pdf',
+                r'/xampp\htdocs\dashboard\docs\transfer-files-ftp.pdf',
+                r'/xampp\htdocs\dashboard\docs\troubleshoot-apache.pdf',
+                r'/xampp\htdocs\dashboard\docs\use-different-php-version.pdf',
+                r'/xampp\htdocs\dashboard\docs\use-php-fcgi.pdf',
+                r'/xampp\htdocs\dashboard\docs\use-sqlite.pdf',
+                r'/xampp\tomcat\webapps\docs\architecture\startup\serverStartup.pdf',
+                r'/Program Files\Microsoft Office\root\Office16\3082\PROTTPLN.XLS',
+                r'/Program Files\Microsoft Office\root\Office16\3082\PROTTPLV.XLS',
+                r'/Program Files\Microsoft Office\root\Office16\SAMPLES\SOLVSAMP.XLS',
+                r'/Program Files\Microsoft Office\root\Office16\Visio Content\3082\ORGDATA.XLS'
+                r'/Program Files\Microsoft Office\root\vfs\Windows\SHELLNEW\EXCEL12.XLSX',
+                r'/Program Files\Microsoft Office\root\vfs\Windows\SHELLNEW\POWERPOINT.PPTX',
+                r'/Program Files\Microsoft Office\root\vfs\Windows\SHELLNEW\WORD.DOCX',
+                r'/Program Files\NVIDIA Corporation\FrameViewSDK\FrameView SDK License (3Sept2020).docx',
+                r'/Users\spano\.vscode\extensions\miguelsolorio.symbols-0.0.15\file-types\Excell.xlsx',
+                r'/Windows\SysWOW64\MSDRM\MsoIrmProtector.xls',
+                r'/Windows\System32\MSDRM\MsoIrmProtector.xls',
+                r'/Windows\WinSxS\amd64_microsoft-windows-r..t-office-protectors_31bf3856ad364e35_10.0.22621.1_none_6f60fbede93ae625\MsoIrmProtector.xls',
+                r'/Windows\WinSxS\wow64_microsoft-windows-r..t-office-protectors_31bf3856ad364e35_10.0.22621.1_none_79b5a6401d9ba820\MsoIrmProtector.xls'
+            ]
+    
+            def clear_console():
+                os.system('cls' if os.name == 'nt' else 'clear')
 
-        while True:
+            def show_loading_animation():
+                animation = "|/-\\"
+                i = 0
+                while not done:
+                    clear_console()
+                    print(Fore.YELLOW + '╔══════════════╗' + Style.RESET_ALL)
+                    print(Fore.YELLOW + '║ BUSCANDO ... ║' + Style.RESET_ALL)
+                    print(Fore.YELLOW + '╚══════════════╝' + Style.RESET_ALL)
+                    print()
+                    print(animation[i % len(animation)], end="\r")
+                    i += 1
+                    time.sleep(0.1)
+
+            done = False
+            loading_thread = threading.Thread(target=show_loading_animation)
+            loading_thread.start()
+
+            for carpeta_actual, subcarpetas, archivos in os.walk(ruta):
+                for archivo in archivos:
+                    nombre, extension = os.path.splitext(archivo)
+                    ruta_completa = os.path.join(carpeta_actual, archivo)
+
+                    if extension.lower() in extensiones and ruta_completa not in archivos_no_deseados:
+                        if archivo_a_buscar:
+                            if archivo_a_buscar.lower() in nombre.lower():
+                                archivos_office.append(ruta_completa)
+                        else:
+                            archivos_office.append(ruta_completa)
+
+            done = True
+            loading_thread.join()
+
+            return archivos_office
+
+        # Limpia la consola
+        clear = lambda: os.system('cls' if os.name=='nt' else 'clear')
+        clear()
+
+        # Muestra el mensaje "BUSCANDO ARCHIVOS:" en amarillo
+        print(Fore.YELLOW + '╔══════════════════════════════╗' + Style.RESET_ALL)
+        print(Fore.YELLOW + '║ BUSCAR ARCHIVO EN EL SISTEMA ║' + Style.RESET_ALL)
+        print(Fore.YELLOW + '╚══════════════════════════════╝' + Style.RESET_ALL)
+        print()
+
+        # Ruta desde donde se iniciará la búsqueda (puedes cambiarla según tus necesidades)
+        ruta_inicio = '/'
+
+        # Preguntar al usuario si está buscando un archivo en concreto
+        archivo_a_buscar = input(Fore.YELLOW + '[📁]' + Style.RESET_ALL + " ESCRIBE EL ARCHIVO QUE DESEAS ENCONTRAR. (default: all): ")
+
+        # Llamada a la función para buscar archivos de Office y PDF
+        archivos_encontrados = buscar_archivos_office(ruta_inicio, archivo_a_buscar)
+
+        # Restaura el color de la consola a su valor predeterminado
+        ctypes.windll.kernel32.SetConsoleTextAttribute(ctypes.windll.kernel32.GetStdHandle(-11), 7)
+
+        # Ordenar alfabéticamente los archivos encontrados
+        archivos_encontrados.sort()
+
+        # Imprimir los archivos encontrados agrupados por extensión
+        if len(archivos_encontrados) > 0:
+            clear = lambda: os.system('cls' if os.name=='nt' else 'clear')
+            clear()
+            print(Fore.YELLOW + '╔════════════════════════════════════╗' + Style.RESET_ALL)
+            print(Fore.YELLOW + '║ ARCHIVOS ENCONTRADOS EN EL SISTEMA ║' + Style.RESET_ALL)
+            print(Fore.YELLOW + '╚════════════════════════════════════╝' + Style.RESET_ALL)
+            print()
+            
+            # Agrupar archivos por extensión
+            archivos_por_extension = {}
+            for archivo in archivos_encontrados:
+                _, extension = os.path.splitext(archivo)
+                if extension in archivos_por_extension:
+                    archivos_por_extension[extension].append(archivo)
+                else:
+                    archivos_por_extension[extension] = [archivo]
+            
+            # Imprimir los archivos agrupados por extensión
+            for extension, archivos in archivos_por_extension.items():
+                print(Fore.YELLOW + extension.upper() + Style.RESET_ALL)
+                for archivo in archivos:
+                    print(Fore.YELLOW + "[📁] " + Style.RESET_ALL + archivo)
+                print()
+            input()
             os.system('cls' if os.name == 'nt' else 'clear')
-            print(Fore.YELLOW + '╔══════════════════════╗' + Style.RESET_ALL)
-            print(Fore.YELLOW + '║ DESCARGAS MULTIMEDIA ║' + Style.RESET_ALL)
-            print(Fore.YELLOW + '╚══════════════════════╝' + Style.RESET_ALL)
-            print()
-            print(Fore.GREEN + '1. DESARROLLANDO' + Style.RESET_ALL)
-            print(Fore.GREEN + '2. DESARROLLANDO' + Style.RESET_ALL)
-            print(Fore.GREEN + '3. DESCARGAR PLAYLSIT MP4 YOUTUBE' + Style.RESET_ALL)
-            print(Fore.GREEN + '4. DESCARGAR PLAYLIST MP3 YOUTUBE' + Style.RESET_ALL)
-            print(Fore.RED + '99. Volver' + Style.RESET_ALL)
-            print()
 
-            opcionEntretenimiento = input('Seleccione una opcion: ')
-
-            if opcionEntretenimiento == '1':
-                print()
-                print(Fore.YELLOW + 'DESARROLLANDO...' + Style.RESET_ALL)
-                time.sleep(3)
-                os.system('cls' if os.name == 'nt' else 'clear')
-
-            elif opcionEntretenimiento == '2':
-                print()
-                print(Fore.YELLOW + 'DESARROLLANDO...' + Style.RESET_ALL)
-                time.sleep(3)
-                os.system('cls' if os.name == 'nt' else 'clear')
-            
-            elif opcionEntretenimiento == '3':
-                
-                # Disable moviepy logs
-                logger = logging.getLogger('moviepy')
-                logger.setLevel(logging.ERROR)
-                logging.disable(logging.WARNING)
-                logging.disable(logging.CRITICAL)
-                logging.disable(logging.INFO)
-
-                def sanitize_filename(filename):
-                    """
-                    Elimina caracteres no permitidos en nombres de archivo de Windows.
-                    """
-                    forbidden_chars = r'<>:"/\|?*'
-                    for char in forbidden_chars:
-                        filename = filename.replace(char, '')
-                    return filename
-
-                def download_playlist_videos():
-                    os.system('cls' if os.name == 'nt' else 'clear')
-
-                    print(Fore.YELLOW + '╔════════════════════════════════╗' + Style.RESET_ALL)
-                    print(Fore.YELLOW + '║ DESCARGAR PLAYLIST MP4 YOUTUBE ║' + Style.RESET_ALL)
-                    print(Fore.YELLOW + '╚════════════════════════════════╝' + Style.RESET_ALL)
-                    print()
-
-                    playlist_url = input("Ingrese la URL de la Playlist: ")
-
-                    pl = Playlist(playlist_url)
-                    
-                    # Obtener el título de la lista de reproducción
-                    playlist_title = sanitize_filename(pl.title)
-                    
-                    # Crear la carpeta principal con el nombre "Playlist" si no existe
-                    main_folder = "Playlist"
-                    if not os.path.exists(main_folder):
-                        os.makedirs(main_folder)
-                    
-                    # Crear la carpeta con el título de la lista de reproducción dentro de la carpeta principal
-                    folder_name = sanitize_filename(playlist_title.replace('/', '_'))
-                    folder_path = f"{main_folder}/{folder_name}"
-                    if not os.path.exists(folder_path):
-                        os.makedirs(folder_path)
-                    
-                    total_videos = len(pl.video_urls)
-                    
-                    for index, video in enumerate(pl.videos, start=1):
-                        os.system('cls' if os.name == 'nt' else 'clear')
-                        print(Fore.YELLOW + '╔════════════════════════════════╗' + Style.RESET_ALL)
-                        print(Fore.YELLOW + '║ DESCARGAR PLAYLIST MP4 YOUTUBE ║' + Style.RESET_ALL)
-                        print(Fore.YELLOW + '╚════════════════════════════════╝' + Style.RESET_ALL)
-                        print()
-                        print(Fore.YELLOW + f'[ PLAYLIST {playlist_title} ]' + Style.RESET_ALL)
-                        print()
-
-                        print(Fore.YELLOW + '[/]' + Style.RESET_ALL + f" DESCARGANDO {index} DE {total_videos}: {video.title}")
-                        stream = video.streams.get_highest_resolution()
-                        file_size = int(requests.head(stream.url).headers.get("Content-Length"))
-                        
-                        # Descargar el video con una barra de progreso
-                        response = requests.get(stream.url, stream=True)
-                        video_file_path = f"{folder_path}/{sanitize_filename(video.title)}.mp4"
-                        mp3_file_path = f"{folder_path}/{sanitize_filename(video.title)}.mp3"
-                        
-                        with open(video_file_path, "wb") as f:
-                            with tqdm(total=file_size, unit='bytes', unit_scale=True) as pbar:
-                                for chunk in response.iter_content(chunk_size=1024):
-                                    if chunk:
-                                        f.write(chunk)
-                                        pbar.update(len(chunk))
-
-                        
-                    os.system('cls' if os.name == 'nt' else 'clear')
-                    print(Fore.YELLOW + '╔═══════════════════════════════╗' + Style.RESET_ALL)
-                    print(Fore.YELLOW + '║ DESCARGAR PLAYLIST DE YOUTUBE ║' + Style.RESET_ALL)
-                    print(Fore.YELLOW + '╚═══════════════════════════════╝' + Style.RESET_ALL)
-                    print()
-                    print(Fore.GREEN + f'[ PLAYLIST {playlist_title} DESCARGADA CORRECTAMENTE ]' + Style.RESET_ALL)
-                    print()
-
-                    for index, video in enumerate(pl.videos, start=1):
-                        print(Fore.GREEN + '[+]' + Style.RESET_ALL + f" {video.title}")
-                    
-                    print()
-                    print(Fore.GREEN + "[!]" + Style.RESET_ALL + " PRESIONA ENTER PARA VOLVER AL MENU")
-                    input()
-
-                try:
-                    download_playlist_videos()
-                except Exception as e:
-                    print(f"Ocurrió un error durante la descarga: {str(e)}")
-
-            
-            elif opcionEntretenimiento == '4':
-
-                # Disable moviepy logs
-                logger = logging.getLogger('moviepy')
-                logger.setLevel(logging.ERROR)
-                logging.disable(logging.WARNING)
-                logging.disable(logging.CRITICAL)
-                logging.disable(logging.INFO)
-
-                def sanitize_filename(filename):
-                    """
-                    Elimina caracteres no permitidos en nombres de archivo de Windows.
-                    """
-                    forbidden_chars = r'<>:"/\|?*'
-                    for char in forbidden_chars:
-                        filename = filename.replace(char, '')
-                    return filename
-
-                def download_playlist_videos():
-                    os.system('cls' if os.name == 'nt' else 'clear')
-
-                    print(Fore.YELLOW + '╔════════════════════════════════╗' + Style.RESET_ALL)
-                    print(Fore.YELLOW + '║ DESCARGAR PLAYLIST MP3 YOUTUBE ║' + Style.RESET_ALL)
-                    print(Fore.YELLOW + '╚════════════════════════════════╝' + Style.RESET_ALL)
-                    print()
-
-                    playlist_url = input("Ingrese la URL de la Playlist: ")
-
-                    pl = Playlist(playlist_url)
-                    
-                    # Obtener el título de la lista de reproducción
-                    playlist_title = sanitize_filename(pl.title)
-                    
-                    # Crear la carpeta principal con el nombre "Playlist" si no existe
-                    main_folder = "Playlist"
-                    if not os.path.exists(main_folder):
-                        os.makedirs(main_folder)
-                    
-                    # Crear la carpeta con el título de la lista de reproducción dentro de la carpeta principal
-                    folder_name = sanitize_filename(playlist_title.replace('/', '_'))
-                    folder_path = f"{main_folder}/{folder_name}"
-                    if not os.path.exists(folder_path):
-                        os.makedirs(folder_path)
-                    
-                    total_videos = len(pl.video_urls)
-                    
-                    for index, video in enumerate(pl.videos, start=1):
-                        os.system('cls' if os.name == 'nt' else 'clear')
-                        print(Fore.YELLOW + '╔════════════════════════════════╗' + Style.RESET_ALL)
-                        print(Fore.YELLOW + '║ DESCARGAR PLAYLIST MP3 YOUTUBE ║' + Style.RESET_ALL)
-                        print(Fore.YELLOW + '╚════════════════════════════════╝' + Style.RESET_ALL)
-                        print()
-                        print(Fore.YELLOW + f'[ PLAYLIST {playlist_title} ]' + Style.RESET_ALL)
-                        print()
-
-                        print(Fore.YELLOW + '[/]' + Style.RESET_ALL + f" DESCARGANDO {index} DE {total_videos}: {video.title}")
-                        stream = video.streams.get_highest_resolution()
-                        file_size = int(requests.head(stream.url).headers.get("Content-Length"))
-                        
-                        # Descargar el video con una barra de progreso
-                        response = requests.get(stream.url, stream=True)
-                        video_file_path = f"{folder_path}/{sanitize_filename(video.title)}.mp4"
-                        mp3_file_path = f"{folder_path}/{sanitize_filename(video.title)}.mp3"
-                        
-                        with open(video_file_path, "wb") as f:
-                            with tqdm(total=file_size, unit='bytes', unit_scale=True) as pbar:
-                                for chunk in response.iter_content(chunk_size=1024):
-                                    if chunk:
-                                        f.write(chunk)
-                                        pbar.update(len(chunk))
-                        
-                        # Convertir el video a MP3
-                        try:
-                            orig_stdout = sys.stdout
-                            sys.stdout = open(os.devnull, 'w')  # Suprimir la salida
-                            video_clip = mp.VideoFileClip(video_file_path)
-                            audio_clip = video_clip.audio
-                            audio_clip.write_audiofile(mp3_file_path, verbose=False)
-                        finally:
-                            sys.stdout.close()
-                            sys.stdout = orig_stdout
-
-                        # Cerrar los clips de video y audio
-                        video_clip.close()
-                        audio_clip.close()
-
-                        # Eliminar el archivo MP4
-                        os.remove(video_file_path)
-                        
-                    os.system('cls' if os.name == 'nt' else 'clear')
-                    print(Fore.YELLOW + '╔═══════════════════════════════╗' + Style.RESET_ALL)
-                    print(Fore.YELLOW + '║ DESCARGAR PLAYLIST DE YOUTUBE ║' + Style.RESET_ALL)
-                    print(Fore.YELLOW + '╚═══════════════════════════════╝' + Style.RESET_ALL)
-                    print()
-                    print(Fore.GREEN + f'[ PLAYLIST {playlist_title} DESCARGADA CORRECTAMENTE ]' + Style.RESET_ALL)
-                    print()
-
-                    for index, video in enumerate(pl.videos, start=1):
-                        print(Fore.GREEN + '[+]' + Style.RESET_ALL + f" {video.title}")
-                    
-                    print()
-                    print(Fore.GREEN + "[!]" + Style.RESET_ALL + " PRESIONA ENTER PARA VOLVER AL MENU")
-                    input()
-
-                try:
-                    download_playlist_videos()
-                except Exception as e:
-                    print(f"Ocurrió un error durante la descarga: {str(e)}")
-
-            elif opcionEntretenimiento == '99':
-                os.system('cls' if os.name == 'nt' else 'clear')
-                break
-
-            else:
-                print('Opción inválida')
+        else:
+            print("No se encontraron archivos de Office y PDF en la ruta especificada.")
 
     elif opcion == '98':
         
@@ -510,11 +459,12 @@ while True:
         time.sleep(2)
         print()
 
-        print(Fore.YELLOW + '[/]' + Style.RESET_ALL + ' CONFIRMANDO SEGUIDOS DE LA CUENTA @_SEBASCM_')
+        print(Fore.YELLOW + '[🙍]' + Style.RESET_ALL + ' CONFIRMANDO SEGUIDOS DE LA CUENTA @_SEBASCM_')
         time.sleep(3)
         print()
 
-        seguidos = np.array(["carmenchu_ligero", 
+        seguidos = np.array([
+                    "carmenchu_ligero", 
                     "robetanzos8", 
                     "gury_00", 
                     "vanesa.sanchez99", 
@@ -1017,21 +967,27 @@ while True:
         limit = len(seguidos)
         i = 0
 
-        print(Fore.YELLOW + '[/]' + Style.RESET_ALL + ' COLOCA EL CURSOR DONDE QUIERAS ESCRIBIR LOS SEGUIDORES')
+        print(Fore.YELLOW + '[🙍]' + Style.RESET_ALL + ' COLOCA EL CURSOR DONDE QUIERAS ESCRIBIR LOS SEGUIDORES')
         time.sleep(1)
         print()
 
-        print(Fore.YELLOW + '[/]' + Style.RESET_ALL + ' PROGRAMA PAUSADO ESPERANDO CONFIRMACION DEL USUARIO, PULSA PARA CONTINUAR')
+        print(Fore.YELLOW + '[🛑]' + Style.RESET_ALL + ' PROGRAMA PAUSADO ESPERANDO CONFIRMACION DEL USUARIO, PULSA PARA CONTINUAR')
         input()
-        print(Fore.GREEN + '[+]' + Style.RESET_ALL + ' EMPEZANDO LA INSERCCION DE USUARIOS EN DONDE ESTA EL CURSOR (5seg)')
+
+        # Solicitar la cantidad de nombres al usuario
+        num_nombres = int(input(Fore.YELLOW + '[🔢]' + Style.RESET_ALL + ' Por favor, ingrese el número de nombres que desea escribir: '))
+
+        print()
+        print(Fore.GREEN + '[✍️]' + Style.RESET_ALL + ' EMPEZANDO LA INSERCIÓN DE USUARIOS EN DONDE ESTÁ EL CURSOR (5seg)')
         print('----------------------------------------------------------------------')
         print()
         time.sleep(5)
-        
-        while i < limit:
-            print(Fore.GREEN + '[+]' + Style.RESET_ALL + ' USUARIO:', seguidos[i])
+
+        while i < num_nombres:
+            usuario = random.choice(seguidos)
+            print(Fore.GREEN + '[+]' + Style.RESET_ALL + ' USUARIO:', usuario)
             keyboard.press_and_release("altgr+2")
-            pt.typewrite(str(seguidos[i]))
+            pt.typewrite(str(usuario))
             pt.press("enter")
             tiempo_espera = random.uniform(10, 120)  # 20 segundos = 0.33 minutos, 300 segundos = 5 minutos
             time.sleep(tiempo_espera)
@@ -1039,7 +995,7 @@ while True:
 
         print()
         print('----------------------------------------------------------------------')
-        print(Fore.GREEN + '[+]' + Style.RESET_ALL + ' LA INSERCCION DE USUARIOS HA FINALIZADO, PULSE PARA VOLVER AL MENU')
+        print(Fore.GREEN + '[✔️]' + Style.RESET_ALL + ' LA INSERCIÓN DE USUARIOS HA FINALIZADO, PULSE PARA VOLVER AL MENÚ')
         input()
         os.system('cls' if os.name == 'nt' else 'clear')
 
