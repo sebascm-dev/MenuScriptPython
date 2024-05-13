@@ -51,6 +51,7 @@ while True:
     print()
     print(Fore.GREEN + '1. Activaciones Windows' + Style.RESET_ALL)
     print(Fore.GREEN + '2. Descargar Office-2021' + Style.RESET_ALL)
+    print(Fore.GREEN + '3. Preparar Ordenador' + Style.RESET_ALL)
     print(Fore.RED + '99. Salir' + Style.RESET_ALL)
     print()
 
@@ -190,6 +191,106 @@ while True:
 
         os.system('cls' if os.name == 'nt' else 'clear')
     
+    elif opcion == '3':
+
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print(Fore.YELLOW + '╔═══════════════════════════════════╗' + Style.RESET_ALL)
+        print(Fore.YELLOW + '║ PREPARANDO ORDENADOR DE SEBASTIAN ║' + Style.RESET_ALL)
+        print(Fore.YELLOW + '╚═══════════════════════════════════╝' + Style.RESET_ALL)
+        print()
+        # INSTALACION DE GIT
+        command = 'winget install --id Git.Git -e --source winget'
+        try:
+            time.sleep(2)
+            print(Fore.YELLOW + '[/]' + Style.RESET_ALL + ' INSTALANDO GIT EN TU ORDENADOR')
+            print()
+            # Ejecutar el comando en PowerShell
+            subprocess.run(['powershell', '-Command', command], check=True)
+            time.sleep(2)
+            print()
+            print(Fore.GREEN + '[+]' + Style.RESET_ALL + ' GIT SE HA INSTALADO CORRECTAMENTE')
+            print()
+            print()
+            time.sleep(2)
+
+        except subprocess.CalledProcessError:
+            print()
+            print(Fore.RED + '[-]' + Style.RESET_ALL + ' ERROR AL INSTALAR GIT')
+            time.sleep(2)
+            print()
+            print()
+
+
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print(Fore.YELLOW + '╔═══════════════════════════════════╗' + Style.RESET_ALL)
+        print(Fore.YELLOW + '║ PREPARANDO ORDENADOR DE SEBASTIAN ║' + Style.RESET_ALL)
+        print(Fore.YELLOW + '╚═══════════════════════════════════╝' + Style.RESET_ALL)
+        print()
+        # INSTALACIÓN DE LA ULTIMA VERSION DE NODE
+        url = "https://nodejs.org/dist/index.json"
+        try:
+            print(Fore.YELLOW + '[/]' + Style.RESET_ALL + ' INSTALANDO NODE EN TU ORDENADOR')
+            time.sleep(2)
+            response = requests.get(url)
+            response.raise_for_status()  # Lanza una excepción si la solicitud no fue exitosa
+            # Analiza el JSON para encontrar la versión LTS más reciente
+            print(Fore.YELLOW + '[/]' + Style.RESET_ALL + ' BUSCANDO VERSION MAS RECIENTE')
+            time.sleep(2)
+            data = response.json()
+            lts_versions = [version for version in data if version.get("lts")]
+            if lts_versions:
+                latest_lts_version = lts_versions[0]["version"]
+                # Construye la URL de descarga para la última versión LTS
+                download_url = f"https://nodejs.org/dist/{latest_lts_version}/node-{latest_lts_version}-x64.msi"
+                # Descarga el archivo
+                response = requests.get(download_url)
+                if response.status_code == 200:
+                    # Guarda el archivo en el disco
+                    with open(f"node-{latest_lts_version}-x64.msi", "wb") as f:
+                        f.write(response.content)
+                    print()
+                    print(Fore.GREEN + '[+]' + Style.RESET_ALL + f"SE HA DESCARGADO LA ULTIMA VERSION LTS DE NODE.JS ({latest_lts_version}) COMO node-{latest_lts_version}-x64.msi")
+                    time.sleep(2)
+                    print()
+                    print()
+                    # Ejecuta el instalador MSI
+                    subprocess.run([f"node-{latest_lts_version}-x64.msi"], shell=True)
+                else:
+                    print("No se pudo descargar el archivo.")
+            else:
+                print("No se encontraron versiones LTS disponibles en el servicio JSON.")
+        except requests.exceptions.RequestException as e:
+            print(f"Error al realizar la solicitud: {str(e)}")
+        
+
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print(Fore.YELLOW + '╔═══════════════════════════════════╗' + Style.RESET_ALL)
+        print(Fore.YELLOW + '║ PREPARANDO ORDENADOR DE SEBASTIAN ║' + Style.RESET_ALL)
+        print(Fore.YELLOW + '╚═══════════════════════════════════╝' + Style.RESET_ALL)
+        print()
+        # INSTALACION DE PNPM
+        command = 'iwr https://get.pnpm.io/install.ps1 -useb | iex'
+        try:
+            time.sleep(2)
+            print(Fore.YELLOW + '[/]' + Style.RESET_ALL + ' INSTALANDO PNPM EN TU ORDENADOR')
+            print()
+            # Ejecutar el comando en PowerShell
+            subprocess.run(['powershell', '-Command', command], check=True)
+            time.sleep(2)
+            print()
+            print(Fore.GREEN + '[+]' + Style.RESET_ALL + ' PNPM SE HA INSTALADO CORRECTAMENTE')
+            print()
+            print()
+            time.sleep(2)
+        except subprocess.CalledProcessError:
+            print()
+            print(Fore.RED + '[-]' + Style.RESET_ALL + ' ERROR AL INSTALAR PNPM')
+            time.sleep(2)
+            print()
+            print()
+        
+        os.system('cls' if os.name == 'nt' else 'clear')
+
     elif opcion == '99':
         print('Saliendo...')
         sys.exit()
